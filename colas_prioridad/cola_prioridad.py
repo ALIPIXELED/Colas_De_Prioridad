@@ -1,3 +1,4 @@
+#Esta clase define la estructura basica de una cola de prioridad.
 class ColaPrioridadBase:
     def __init__(self):
         self.heap = []
