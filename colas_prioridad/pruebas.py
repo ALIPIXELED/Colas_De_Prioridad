@@ -1,9 +1,10 @@
 from cola_prioridad import MaxHeap, MinHeap
 
-cola = MaxHeap()
-cola.insertar(5, "Paciente leve")
-cola.insertar(10, "Emergencia")
-cola.insertar(7, "Urgencia media")
+print("Prueba con MinHeap:")
+cola = MinHeap()
+cola.insertar(2, "Revisión rutina")
+cola.insertar(1, "Emergencia")
+cola.insertar(3, "Consulta leve")
 
 while not cola.esta_vacia():
-    print("Atendiendo:", cola.extraer())
+    print(cola.extraer())

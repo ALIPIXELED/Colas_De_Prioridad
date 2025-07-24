@@ -1,77 +1,88 @@
-import heapq
-
-class ElementoPrioridad:
-    def __init__(self, prioridad, dato):
-        self.prioridad = prioridad
-        self.dato = dato
-
-    def __repr__(self):
-        return f"({self.prioridad}, {self.dato})"
-
-# ------------------------------------------
-# Clase base (opcional si se quiere extender más)
-# ------------------------------------------
-
-class ColaPrioridad:
-    def insertar(self, prioridad, dato):
-        raise NotImplementedError
-
-    def extraer(self):
-        raise NotImplementedError
-
-    def ver_siguiente(self):
-        raise NotImplementedError
-
-    def esta_vacia(self):
-        raise NotImplementedError
-
-# ------------------------------------------
-# MinHeap: menor prioridad = más urgente
-# ------------------------------------------
-
-class MinHeap(ColaPrioridad):
+class ColaPrioridadBase:
     def __init__(self):
         self.heap = []
-
-    def insertar(self, prioridad, dato):
-        heapq.heappush(self.heap, (prioridad, dato))
-
-    def extraer(self):
-        if self.esta_vacia():
-            return None
-        return heapq.heappop(self.heap)
-
-    def ver_siguiente(self):
-        if self.esta_vacia():
-            return None
-        return self.heap[0]
 
     def esta_vacia(self):
         return len(self.heap) == 0
 
-# ------------------------------------------
-# MaxHeap: mayor prioridad = más urgente
-# ------------------------------------------
+    def ver_siguiente(self):
+        return self.heap[0] if not self.esta_vacia() else None
 
-class MaxHeap(ColaPrioridad):
-    def __init__(self):
-        self.heap = []
+    def _intercambiar(self, i, j):
+        self.heap[i], self.heap[j] = self.heap[j], self.heap[i]
 
+class MinHeap(ColaPrioridadBase):
     def insertar(self, prioridad, dato):
-        # Usamos -prioridad para simular MaxHeap con heapq
-        heapq.heappush(self.heap, (-prioridad, dato))
+        self.heap.append((prioridad, dato))
+        self._subir(len(self.heap) - 1)
 
     def extraer(self):
         if self.esta_vacia():
             return None
-        prioridad, dato = heapq.heappop(self.heap)
-        return (-prioridad, dato)
+        self._intercambiar(0, len(self.heap) - 1)
+        min_val = self.heap.pop()
+        self._bajar(0)
+        return min_val
 
-    def ver_siguiente(self):
+    def _subir(self, index):
+        while index > 0:
+            padre = (index - 1) // 2
+            if self.heap[index][0] < self.heap[padre][0]:
+                self._intercambiar(index, padre)
+                index = padre
+            else:
+                break
+
+    def _bajar(self, index):
+        n = len(self.heap)
+        while True:
+            izquierdo = 2 * index + 1
+            derecho = 2 * index + 2
+            menor = index
+
+            if izquierdo < n and self.heap[izquierdo][0] < self.heap[menor][0]:
+                menor = izquierdo
+            if derecho < n and self.heap[derecho][0] < self.heap[menor][0]:
+                menor = derecho
+            if menor == index:
+                break
+            self._intercambiar(index, menor)
+            index = menor
+
+class MaxHeap(ColaPrioridadBase):
+    def insertar(self, prioridad, dato):
+        self.heap.append((prioridad, dato))
+        self._subir(len(self.heap) - 1)
+
+    def extraer(self):
         if self.esta_vacia():
             return None
-        prioridad, dato = self.heap[0]
-        return (-prioridad, dato)
+        self._intercambiar(0, len(self.heap) - 1)
+        max_val = self.heap.pop()
+        self._bajar(0)
+        return max_val
 
-    def esta_vacia(self):
-        return len(self.heap) == 0
+    def _subir(self, index):
+        while index > 0:
+            padre = (index - 1) // 2
+            if self.heap[index][0] > self.heap[padre][0]:
+                self._intercambiar(index, padre)
+                index = padre
+            else:
+                break
+
+    def _bajar(self, index):
+        n = len(self.heap)
+        while True:
+            izquierdo = 2 * index + 1
+            derecho = 2 * index + 2
+            mayor = index
+
+            if izquierdo < n and self.heap[izquierdo][0] > self.heap[mayor][0]:
+                mayor = izquierdo
+            if derecho < n and self.heap[derecho][0] > self.heap[mayor][0]:
+                mayor = derecho
+            if mayor == index:
+                break
+            self._intercambiar(index, mayor)
+            index = mayor
