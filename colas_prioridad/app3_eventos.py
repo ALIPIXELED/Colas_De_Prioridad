@@ -1,8 +1,8 @@
 from cola_prioridad import MaxHeap, MinHeap
 from PyQt6.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QListWidget, QMessageBox, QComboBox, QListWidgetItem
+    QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QListWidget, QMessageBox, QComboBox, QListWidgetItem, QTimeEdit
 )
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QTime
 
 # Mini aplicación de prueba con PyQt6 para gestionar eventos con prioridad
 
@@ -21,7 +21,7 @@ class EventoApp(QWidget):
         layout.setSpacing(20)
 
         # Encabezado bonito
-        header = QLabel("♦♦♦♦♦♦♦ ☺ Gestor de Eventos con Prioridad ☺ ♦♦♦♦♦♦♦ssss")
+        header = QLabel("♦♦♦♦♦♦♦ ☺ Gestor de Eventos con Prioridad ☺ ♦♦♦♦♦♦♦")
         header.setAlignment(Qt.AlignmentFlag.AlignCenter)
         header.setStyleSheet("font-size: 26px; font-weight: bold; margin-bottom: 10px; color: #111;")
         layout.addWidget(header)
@@ -44,6 +44,10 @@ class EventoApp(QWidget):
         self.prioridad_input = QLineEdit()
         self.prioridad_input.setPlaceholderText("Prioridad (entero, mayor = más importante)")
         self.prioridad_input.setMaximumWidth(200)
+        self.hora_input = QTimeEdit()
+        self.hora_input.setDisplayFormat("HH:mm")
+        self.hora_input.setTime(QTime.currentTime())
+        self.hora_input.setMaximumWidth(100)
         agregar_btn = QPushButton("Agregar Evento")
         agregar_btn.clicked.connect(self.agregar_evento)
         agregar_btn.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -53,6 +57,7 @@ class EventoApp(QWidget):
         form_layout.setSpacing(10)
         form_layout.addWidget(self.evento_input)
         form_layout.addWidget(self.prioridad_input)
+        form_layout.addWidget(self.hora_input)
         form_layout.addWidget(agregar_btn)
         layout.addLayout(form_layout)
 
@@ -85,6 +90,7 @@ class EventoApp(QWidget):
     def agregar_evento(self):
         evento = self.evento_input.text().strip()
         prioridad_text = self.prioridad_input.text().strip()
+        hora = self.hora_input.time().toString("HH:mm")
         if not evento or not prioridad_text:
             QMessageBox.warning(self, "Error", "Debe ingresar el nombre y la prioridad del evento.")
             return
@@ -93,10 +99,11 @@ class EventoApp(QWidget):
         except ValueError:
             QMessageBox.warning(self, "Error", "La prioridad debe ser un número entero.")
             return
-        self.eventos.append((prioridad, evento))
+        self.eventos.append((prioridad, evento, hora))
         self.evento_input.clear()
         self.prioridad_input.clear()
-        QMessageBox.information(self, "Evento agregado", f"Evento '{evento}' agregado con prioridad {prioridad}.")
+        self.hora_input.setTime(QTime.currentTime())
+        QMessageBox.information(self, "Evento agregado", f"Evento '{evento}' agregado con prioridad {prioridad} a las {hora}.")
 
     def mostrar_eventos(self):
         self.lista_eventos.clear()
@@ -108,14 +115,14 @@ class EventoApp(QWidget):
             heap = MaxHeap()
         else:
             heap = MinHeap()
-        for prioridad, evento in self.eventos:
-            heap.insertar(prioridad, evento)
+        for prioridad, evento, hora in self.eventos:
+            heap.insertar(prioridad, (evento, hora))
         eventos_ordenados = []
         while not heap.esta_vacia():
-            prioridad, evento = heap.extraer()
-            eventos_ordenados.append((prioridad, evento))
-        for prioridad, evento in eventos_ordenados:
-            item = QListWidgetItem(f"Prioridad: {prioridad} - Evento: {evento}")
+            prioridad, (evento, hora) = heap.extraer()
+            eventos_ordenados.append((prioridad, evento, hora))
+        for prioridad, evento, hora in eventos_ordenados:
+            item = QListWidgetItem(f"Prioridad: {prioridad} - Evento: {evento} - Hora: {hora}")
             item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
             item.setCheckState(Qt.CheckState.Unchecked)
             self.lista_eventos.addItem(item)
@@ -134,10 +141,10 @@ class EventoApp(QWidget):
                 items_a_eliminar.append(item.text())
         # Eliminar de self.eventos los que coincidan
         nuevos_eventos = []
-        for prioridad, evento in self.eventos:
-            texto = f"Prioridad: {prioridad} - Evento: {evento}"
+        for prioridad, evento, hora in self.eventos:
+            texto = f"Prioridad: {prioridad} - Evento: {evento} - Hora: {hora}"
             if texto not in items_a_eliminar:
-                nuevos_eventos.append((prioridad, evento))
+                nuevos_eventos.append((prioridad, evento, hora))
         self.eventos = nuevos_eventos
         self.mostrar_eventos()
 
@@ -218,6 +225,20 @@ class EventoApp(QWidget):
         }
         QMessageBox QLabel {
             font-size: 15px;
+            color: #111;
+        }
+        QTimeEdit {
+            color: #111;
+            font-size: 16px;
+            border: 2px solid #bdbdbd;
+            border-radius: 8px;
+            padding: 6px 10px;
+            background: #fff;
+            min-width: 80px;
+        }
+        QTimeEdit:focus {
+            border: 2px solid #6c63ff;
+            background: #f0f0ff;
             color: #111;
         }
         """
