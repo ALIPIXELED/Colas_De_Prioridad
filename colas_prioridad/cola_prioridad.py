@@ -1,22 +1,29 @@
 #Esta clase define la estructura basica de una cola de prioridad.
 class ColaPrioridadBase:
+    #constructor, crea una lista vacia para el heap
     def __init__(self):
         self.heap = []
 
+    #devuelve True si la cola esta vacia
     def esta_vacia(self):
         return len(self.heap) == 0
 
+    #muestra el primer elemento sin sacarlo
     def ver_siguiente(self):
         return self.heap[0] if not self.esta_vacia() else None
 
+    #intercambia dos elementos del heap
     def _intercambiar(self, i, j):
         self.heap[i], self.heap[j] = self.heap[j], self.heap[i]
 
+#implementa un heap minimo
 class MinHeap(ColaPrioridadBase):
+    #inserta un elemento con prioridad
     def insertar(self, prioridad, dato):
         self.heap.append((prioridad, dato))
         self._subir(len(self.heap) - 1)
 
+    #saca el elemento con menor prioridad
     def extraer(self):
         if self.esta_vacia():
             return None
@@ -25,6 +32,7 @@ class MinHeap(ColaPrioridadBase):
         self._bajar(0)
         return min_val
 
+    #sube el elemento hasta su lugar correcto
     def _subir(self, index):
         while index > 0:
             padre = (index - 1) // 2
@@ -34,6 +42,7 @@ class MinHeap(ColaPrioridadBase):
             else:
                 break
 
+    #baja el elemento hasta su lugar correcto
     def _bajar(self, index):
         n = len(self.heap)
         while True:
@@ -50,11 +59,14 @@ class MinHeap(ColaPrioridadBase):
             self._intercambiar(index, menor)
             index = menor
 
+#implementa un heap maximo
 class MaxHeap(ColaPrioridadBase):
+    #inserta un elemento con prioridad
     def insertar(self, prioridad, dato):
         self.heap.append((prioridad, dato))
         self._subir(len(self.heap) - 1)
 
+    #saca el elemento con mayor prioridad
     def extraer(self):
         if self.esta_vacia():
             return None
@@ -63,6 +75,7 @@ class MaxHeap(ColaPrioridadBase):
         self._bajar(0)
         return max_val
 
+    #sube el elemento hasta su lugar correcto
     def _subir(self, index):
         while index > 0:
             padre = (index - 1) // 2
@@ -72,6 +85,7 @@ class MaxHeap(ColaPrioridadBase):
             else:
                 break
 
+    #baja el elemento hasta su lugar correcto
     def _bajar(self, index):
         n = len(self.heap)
         while True:
