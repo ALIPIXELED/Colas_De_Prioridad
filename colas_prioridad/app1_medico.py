@@ -6,8 +6,7 @@ from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, QL
 from PyQt6.QtGui import QFont, QColor
 import sys
 
-# Aquí defino las enfermedades y su nivel de prioridad
-# 1 es súper urgente y 10 es lo menos urgente
+#diccionario que asigna prioridad a cada enfermedad (1 es mas urgente)
 ENFERMEDADES_PRIORIDAD = {
     'infarto': 1,
     'accidente grave': 1,
@@ -26,8 +25,8 @@ ENFERMEDADES_PRIORIDAD = {
     'consulta general': 10
 }
 
-# Esta función devuelve un color dependiendo de la prioridad
-# Rojo si es urgente, amarillo si es media y verde si es leve
+#funcion que devuelve un color segun la prioridad
+#rojo si es urgente, amarillo si es medio, verde si es leve
 def color_por_prioridad(prioridad):
     if prioridad <= 2:
         return QColor('#ffb3b3')  # rojo claro
@@ -36,17 +35,22 @@ def color_por_prioridad(prioridad):
     else:
         return QColor('#b3ffb3')  # verde claro
 
-# Esta es mi clase principal de la app del hospital
+#clase principal de la app del hospital
 class HospitalApp(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('Hospital - Gestión de Pacientes')  # título de la ventana
-        self.setMinimumWidth(600)  # ancho mínimo
-        self.cola = MinHeap()  # aquí guardo los pacientes con prioridad
-        self.init_ui()  # armo la interfaz
-        self.setStyleSheet(self.estilos())  # aplico estilos
+        #titulo de la ventana
+        self.setWindowTitle('Hospital - Gestion de Pacientes')
+        #ancho minimo de la ventana
+        self.setMinimumWidth(600)
+        #usa un heap minimo para la cola de pacientes
+        self.cola = MinHeap()
+        #inicializa la interfaz
+        self.init_ui()
+        #aplica estilos
+        self.setStyleSheet(self.estilos())
 
-    # Aquí están los estilos de toda la interfaz
+    #devuelve los estilos para la interfaz
     def estilos(self):
         return """
         QWidget {
@@ -96,21 +100,21 @@ class HospitalApp(QWidget):
         }
         """
 
-    # Aquí armo todos los controles y los pongo en pantalla
+    #arma la interfaz grafica
     def init_ui(self):
         layout = QVBoxLayout()  # layout vertical principal
         layout.setSpacing(18)
         layout.setContentsMargins(24, 24, 24, 24)
 
-        # --- Parte de arriba: formulario para agregar paciente ---
-        form_layout = QHBoxLayout()  # layout horizontal
+        #formulario para agregar paciente
+        form_layout = QHBoxLayout()
         form_layout.setSpacing(12)
         self.nombre_input = QLineEdit()  # caja para escribir nombre
         self.nombre_input.setPlaceholderText('Nombre del paciente')  # texto de ayuda
         self.enfermedad_combo = QComboBox()  # combo para elegir enfermedad
         self.enfermedad_combo.addItems(ENFERMEDADES_PRIORIDAD.keys())  # le pongo las enfermedades
-        self.btn_agregar = QPushButton('Agregar paciente')  # botón para agregar
-        self.btn_agregar.clicked.connect(self.agregar_paciente)  # lo conecto a la función
+        self.btn_agregar = QPushButton('Agregar paciente')  # boton para agregar
+        self.btn_agregar.clicked.connect(self.agregar_paciente)  # lo conecto a la funcion
         # agrego todo al layout
         form_layout.addWidget(QLabel('Nombre:'))
         form_layout.addWidget(self.nombre_input)
@@ -119,12 +123,12 @@ class HospitalApp(QWidget):
         form_layout.addWidget(self.btn_agregar)
         layout.addLayout(form_layout)
 
-        # --- Lista de pacientes en espera ---
+        #lista de espera de pacientes
         self.lista_espera = QListWidget()
         layout.addWidget(QLabel('Pacientes en espera:'))
         layout.addWidget(self.lista_espera)
 
-        # --- Botón de atender paciente ---
+        #boton para atender al siguiente paciente
         self.btn_atender = QPushButton('Atender siguiente paciente')
         self.btn_atender.clicked.connect(self.atender_paciente)
         layout.addWidget(self.btn_atender)
@@ -133,7 +137,7 @@ class HospitalApp(QWidget):
         self.setLayout(layout)
         self.actualizar_lista()  # actualizo la lista
 
-    # Esta función agrega un paciente a la cola
+    #agrega un paciente a la cola
     def agregar_paciente(self):
         nombre = self.nombre_input.text().strip()
         enfermedad = self.enfermedad_combo.currentText()
@@ -147,7 +151,7 @@ class HospitalApp(QWidget):
         self.nombre_input.clear()  # limpio la caja de texto
         self.actualizar_lista()  # actualizo la lista visual
 
-    # Esta función saca al paciente con mayor prioridad
+    #atiende al paciente con mayor prioridad (menor numero)
     def atender_paciente(self):
         paciente = self.cola.extraer()
         if paciente:
@@ -159,7 +163,7 @@ class HospitalApp(QWidget):
             QMessageBox.information(self, 'Sin pacientes', 'No hay pacientes en espera.')
         self.actualizar_lista()  # actualizo lista
 
-    # Esta función refresca lo que se ve en la lista
+    #actualiza la lista de pacientes en la interfaz
     def actualizar_lista(self):
         self.lista_espera.clear()
         if self.cola.esta_vacia():
@@ -171,9 +175,13 @@ class HospitalApp(QWidget):
                 item.setBackground(color_por_prioridad(prioridad))
                 self.lista_espera.addItem(item)
 
-# Esto es lo que ejecuta la app
-if __name__ == "__main__":
+#punto de entrada de la aplicacion
+def main():
     app = QApplication(sys.argv)
     ventana = HospitalApp()
     ventana.show()
     sys.exit(app.exec())
+
+#ejecuta la app si el archivo es principal
+if __name__ == "__main__":
+    main()

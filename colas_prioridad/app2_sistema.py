@@ -22,13 +22,6 @@ class SimuladorPC(QWidget):
         self.encender_btn.setStyleSheet("background-color: #222; color: #00FF00; font-family: 'Consolas', 'Courier New', monospace; font-size: 16px; border: 1px solid #00FF00;")
         self.layout.addWidget(self.encender_btn)
 
-        # Eliminar el botón de ejecutar tareas
-        # self.run_btn = QPushButton('Ejecutar Tareas')
-        # self.run_btn.setEnabled(False)
-        # self.run_btn.clicked.connect(self.ejecutar_tareas)
-        # self.run_btn.setStyleSheet("background-color: #222; color: #00FF00; font-family: 'Consolas', 'Courier New', monospace; font-size: 16px; border: 1px solid #00FF00;")
-        # self.layout.addWidget(self.run_btn)
-
         self.apagar_btn = QPushButton('Apagar Computadora')
         self.apagar_btn.setStyleSheet("background-color: #222; color: #00FF00; font-family: 'Consolas', 'Courier New', monospace; font-size: 16px; border: 1px solid #00FF00;")
         self.apagar_btn.setEnabled(False)
