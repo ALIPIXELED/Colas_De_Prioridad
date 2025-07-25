@@ -1,20 +1,21 @@
 from cola_prioridad import MaxHeap, MinHeap
+# Importaciones de PyQt6 para que el programa no se vea en la terminal
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QListWidget, QMessageBox, QComboBox, QListWidgetItem, QTimeEdit
 )
 from PyQt6.QtCore import Qt, QTime
 
-# Mini aplicación de prueba con PyQt6 para gestionar eventos con prioridad
 
 class EventoApp(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Gestor de Eventos con Prioridad")
         self.setMinimumWidth(500)
-        self.eventos = []  # Guardar todos los eventos como (prioridad, evento)
+        self.eventos = []  
         self.init_ui()
         self.setStyleSheet(self.get_styles())
-
+   
+    # el def init_ui es todo lo que tiene que ver con la interfaz de usuario
     def init_ui(self):
         layout = QVBoxLayout()
         layout.setContentsMargins(30, 30, 30, 30)
@@ -26,7 +27,7 @@ class EventoApp(QWidget):
         header.setStyleSheet("font-size: 26px; font-weight: bold; margin-bottom: 10px; color: #111;")
         layout.addWidget(header)
 
-        # ComboBox para elegir el orden
+        # ComboBox para que se pueda elegir el orden en el que se mostraran los eventos
         orden_layout = QHBoxLayout()
         orden_label = QLabel("Orden:")
         orden_label.setStyleSheet("font-size: 16px; color: #111; font-weight: bold;")
@@ -38,7 +39,7 @@ class EventoApp(QWidget):
         orden_layout.addStretch()
         layout.addLayout(orden_layout)
 
-        # Entrada de evento
+        # Aqui van los inputs para agrgar los eventos y darles su prioridad y hora
         self.evento_input = QLineEdit()
         self.evento_input.setPlaceholderText("Nombre del evento")
         self.prioridad_input = QLineEdit()
@@ -61,7 +62,7 @@ class EventoApp(QWidget):
         form_layout.addWidget(agregar_btn)
         layout.addLayout(form_layout)
 
-        # Botón y lista de eventos
+        # Aqui estan los botones para mostrar, quitar y eliminar eventos
         mostrar_btn = QPushButton("Mostrar eventos ordenados")
         mostrar_btn.clicked.connect(self.mostrar_eventos)
         mostrar_btn.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -77,7 +78,6 @@ class EventoApp(QWidget):
 
         self.lista_eventos = QListWidget()
         self.lista_eventos.setStyleSheet("font-size: 16px; padding: 10px; color: #111;")
-        # Cambiado: Quitar el modo de selección múltiple para usar checkboxes
         layout.addWidget(self.lista_eventos)
 
         eliminar_seleccionados_btn = QPushButton("Eliminar seleccionados")
@@ -133,13 +133,11 @@ class EventoApp(QWidget):
         self.lista_eventos.addItem("No hay eventos para mostrar.")
 
     def eliminar_seleccionados(self):
-        # Obtener los textos de los eventos seleccionados
         items_a_eliminar = []
         for i in range(self.lista_eventos.count()):
             item = self.lista_eventos.item(i)
             if item.checkState() == Qt.CheckState.Checked:
                 items_a_eliminar.append(item.text())
-        # Eliminar de self.eventos los que coincidan
         nuevos_eventos = []
         for prioridad, evento, hora in self.eventos:
             texto = f"Prioridad: {prioridad} - Evento: {evento} - Hora: {hora}"
@@ -147,7 +145,8 @@ class EventoApp(QWidget):
                 nuevos_eventos.append((prioridad, evento, hora))
         self.eventos = nuevos_eventos
         self.mostrar_eventos()
-
+    
+    # Esta funcion es todo lo que tiene que ver con la estetica de los botones y los inputs
     def get_styles(self):
         return """
         QWidget {
@@ -242,8 +241,7 @@ class EventoApp(QWidget):
             color: #111;
         }
         """
-
-# Lanzar la aplicación sin usar sys
+# Lanza la app
 app = QApplication([])
 window = EventoApp()
 window.show()
