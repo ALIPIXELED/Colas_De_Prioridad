@@ -170,7 +170,7 @@ class HospitalApp(QWidget):
             self.lista_espera.addItem('No hay pacientes en la cola.')
         else:
             # ordeno los pacientes por prioridad y los muestro con su color
-            for prioridad, datos in sorted(self.cola.heap):
+            for prioridad, datos in sorted(self.cola.heap, key=lambda x: x[0]):
                 item = QListWidgetItem(f"{datos['nombre']} - {datos['enfermedad'].title()} (Prioridad: {prioridad})")
                 item.setBackground(color_por_prioridad(prioridad))
                 self.lista_espera.addItem(item)
