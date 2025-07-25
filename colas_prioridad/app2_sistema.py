@@ -22,13 +22,6 @@ class SimuladorPC(QWidget):
         self.encender_btn.setStyleSheet("background-color: #222; color: #00FF00; font-family: 'Consolas', 'Courier New', monospace; font-size: 16px; border: 1px solid #00FF00;")
         self.layout.addWidget(self.encender_btn)
 
-        # Eliminar el botón de ejecutar tareas
-        # self.run_btn = QPushButton('Ejecutar Tareas')
-        # self.run_btn.setEnabled(False)
-        # self.run_btn.clicked.connect(self.ejecutar_tareas)
-        # self.run_btn.setStyleSheet("background-color: #222; color: #00FF00; font-family: 'Consolas', 'Courier New', monospace; font-size: 16px; border: 1px solid #00FF00;")
-        # self.layout.addWidget(self.run_btn)
-
         self.apagar_btn = QPushButton('Apagar Computadora')
         self.apagar_btn.setStyleSheet("background-color: #222; color: #00FF00; font-family: 'Consolas', 'Courier New', monospace; font-size: 16px; border: 1px solid #00FF00;")
         self.apagar_btn.setEnabled(False)
@@ -46,11 +39,17 @@ class SimuladorPC(QWidget):
         self.layout.addWidget(self.progress_bar)
 
         self.tareas = [
-            (1, 'Cargar sistema operativo (muy importante)'),
-            (3, 'Abrir navegador'),
-            (2, 'Cargar antivirus'),
-            (5, 'Abrir reproductor de música'),
-            (4, 'Sincronizar archivos en la nube'),
+            (1, 'Encendido eléctrico (Power On)'),
+            (2, 'POST (Power-On Self-Test)'),
+            (3, 'Ejecución del firmware BIOS/UEFI'),
+            (4, 'Detección y configuración de dispositivos de arranque'),
+            (5, 'Carga del gestor de arranque (Bootloader)'),
+            (6, 'Carga del núcleo del sistema operativo (Kernel)'),
+            (7, 'Inicialización de drivers y servicios básicos del sistema'),
+            (8, 'Montaje del sistema de archivos'),
+            (9, 'Inicio de servicios del sistema operativo'),
+            (10, 'Carga del entorno de usuario / login'),
+            (11, 'Carga de programas de inicio del usuario'),
         ]
         self.cola = MinHeap()
         for prioridad, tarea in self.tareas:
@@ -108,23 +107,56 @@ class SimuladorPC(QWidget):
 
     def _verificar_tareas_principales(self):
         prioridades = {p for p, _ in self.tareas}
-        # Puedes ajustar aquí qué prioridades son "principales". Por ejemplo, 1 y 2:
-        principales = {1, 2}
-        if not principales.issubset(prioridades):
+        # Las tareas principales son exactamente las prioridades del 1 al 11
+        principales = set(range(1, 12))
+        # Además, deben estar los textos originales para cada prioridad
+        tareas_originales = {
+            1: 'Encendido eléctrico (Power On)',
+            2: 'POST (Power-On Self-Test)',
+            3: 'Ejecución del firmware BIOS/UEFI',
+            4: 'Detección y configuración de dispositivos de arranque',
+            5: 'Carga del gestor de arranque (Bootloader)',
+            6: 'Carga del núcleo del sistema operativo (Kernel)',
+            7: 'Inicialización de drivers y servicios básicos del sistema',
+            8: 'Montaje del sistema de archivos',
+            9: 'Inicio de servicios del sistema operativo',
+            10: 'Carga del entorno de usuario / login',
+            11: 'Carga de programas de inicio del usuario',
+        }
+        # Verifica que todas las tareas principales estén presentes y con el texto correcto
+        validas = True
+        for p in principales:
+            if (p, tareas_originales[p]) not in self.tareas:
+                validas = False
+                break
+        if not validas:
             self.encender_btn.setEnabled(False)
             self.apagar_btn.setEnabled(False)
         else:
             self.encender_btn.setEnabled(True)
-            # Solo habilitar apagar si ya se encendió y ejecutó todo
             if self.estado_label.text() == 'Estado: Tareas ejecutadas':
                 self.apagar_btn.setEnabled(True)
 
     def encender_pc(self):
-        prioridades = {p for p, _ in self.tareas}
-        principales = {1, 2}
-        if not principales.issubset(prioridades):
-            QMessageBox.warning(self, 'Encender', 'No puedes encender la computadora si faltan tareas principales (prioridad 1 y 2).')
-            return
+        # Verifica que todas las tareas principales estén presentes y sin modificar
+        tareas_originales = {
+            1: 'Encendido eléctrico (Power On)',
+            2: 'POST (Power-On Self-Test)',
+            3: 'Ejecución del firmware BIOS/UEFI',
+            4: 'Detección y configuración de dispositivos de arranque',
+            5: 'Carga del gestor de arranque (Bootloader)',
+            6: 'Carga del núcleo del sistema operativo (Kernel)',
+            7: 'Inicialización de drivers y servicios básicos del sistema',
+            8: 'Montaje del sistema de archivos',
+            9: 'Inicio de servicios del sistema operativo',
+            10: 'Carga del entorno de usuario / login',
+            11: 'Carga de programas de inicio del usuario',
+        }
+        principales = set(range(1, 12))
+        for p in principales:
+            if (p, tareas_originales[p]) not in self.tareas:
+                QMessageBox.warning(self, 'Encender', 'No puedes encender la computadora si alguna tarea principal (prioridad 1 a 11) fue eliminada o modificada.')
+                return
         self.estado_label.setText('Estado: Encendida')
         self.encender_btn.setEnabled(False)
         self.apagar_btn.setEnabled(False)
@@ -164,11 +196,25 @@ class SimuladorPC(QWidget):
         pass
 
     def apagar_pc(self):
-        prioridades = {p for p, _ in self.tareas}
-        principales = {1, 2}
-        if not principales.issubset(prioridades):
-            QMessageBox.warning(self, 'Apagar', 'No puedes apagar la computadora si faltan tareas principales (prioridad 1 y 2).')
-            return
+        # Verifica que todas las tareas principales estén presentes y sin modificar
+        tareas_originales = {
+            1: 'Encendido eléctrico (Power On)',
+            2: 'POST (Power-On Self-Test)',
+            3: 'Ejecución del firmware BIOS/UEFI',
+            4: 'Detección y configuración de dispositivos de arranque',
+            5: 'Carga del gestor de arranque (Bootloader)',
+            6: 'Carga del núcleo del sistema operativo (Kernel)',
+            7: 'Inicialización de drivers y servicios básicos del sistema',
+            8: 'Montaje del sistema de archivos',
+            9: 'Inicio de servicios del sistema operativo',
+            10: 'Carga del entorno de usuario / login',
+            11: 'Carga de programas de inicio del usuario',
+        }
+        principales = set(range(1, 12))
+        for p in principales:
+            if (p, tareas_originales[p]) not in self.tareas:
+                QMessageBox.warning(self, 'Apagar', 'No puedes apagar la computadora si alguna tarea principal (prioridad 1 a 11) fue eliminada o modificada.')
+                return
         self.estado_label.setText('Estado: Apagando...')
         self.apagar_btn.setEnabled(False)
         self.agregar_btn.setEnabled(False)
